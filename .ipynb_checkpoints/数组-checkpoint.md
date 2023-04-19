@@ -2,9 +2,8 @@
 - [704 二分查找](#704 二分查找)
     - [35 搜索插入位置](# 35 搜索插入位置)
     - [34 在排序数组中查找元素的第一个和最后一个位置](# 34 在排序数组中查找元素的第一个和最后一个位置)
-
-
-
+- [27 移除元素](# 27移除元素)
+    - [26 删除排序数组中的重复项](# 26 删除排序数组中的重复项)
 
 
 # 704 二分查找
@@ -160,3 +159,65 @@ class Solution:
         return [-1,-1]
 
 ```
+
+
+# 27 移除元素
+采用双指针法（快慢指针）： 核心是**通过一个快指针和一个慢指针在一个for循环里完成两个for循环的工作**
+```python
+#  同向双指针解法， 不改变相对位置。
+class Solution:
+    def removeElement(self, nums: List[int], val: int) -> int:
+        n = len(nums)
+        
+        slow = 0
+        fast = 0
+        while(fast < n):
+            # 用来收集不等于的值，如果fast对应值不等于val, 则把它和slow替换，并让slow前进。
+            if (nums[fast] != val):
+                nums[slow] = nums[fast]
+                slow += 1
+            fast += 1
+        return slow
+
+
+# 相向双指针，改变元素相对位置
+class Solution:
+    def removeElement(self, nums: List[int], val: int) -> int:
+        n = len(nums)
+        
+        left = 0
+        right = n - 1
+        
+        while(left <= right):
+            # left 用来记录边界
+            if nums[left] == val: 
+                if nums[right] != val:
+                    nums[left], nums[right] = nums[right], nums[left]
+                    left += 1
+                right -= 1  # 如果nums[right] 不是val,那么要交换位置，然后right-1，如果是val,那正好，是要去掉的对象，也要right-1
+            else:
+                left += 1 # 没找到val,left 就一直前进
+        return left
+
+```
+
+## 26 删除排序数组中的重复项
+```python
+class Solution:
+    def removeDuplicates(self, nums: List[int]) -> int:
+        n = len(nums)
+        
+        slow = 0
+        fast = 0
+        tmp = nums[0]
+        while (fast < n):
+            # fast 用来保留那些不同的值,与上一题不同的是，要动态更新tmp
+            if (nums[fast] != tmp):
+                slow += 1
+                nums[slow] = nums[fast]
+                tmp = nums[fast]
+            fast += 1
+        return slow + 1 # 返回的是数组的长度, 不是数组的边界
+```
+
+
