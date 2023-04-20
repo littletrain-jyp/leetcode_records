@@ -219,5 +219,90 @@ class Solution:
             fast += 1
         return slow + 1 # 返回的是数组的长度, 不是数组的边界
 ```
+## 283 移动零
+```python
+
+# 先将0删掉，再补零
+class Solution:
+    def moveZeroes(self, nums: List[int]) -> None:
+        n = len(nums)
+        
+        slow = 0
+        fast = 0
+        while (fast < n):
+            if (nums[fast] != 0):
+                nums[slow] = nums[fast]
+                slow += 1
+            fast += 1
+        while (slow < n):
+            nums[slow] = 0
+            slow += 1
+        return
+    
+# 直接交换
+# 慢指针指向当前已处理好的序列的尾部，右指针指向待处理序列的头部。
+# 则有以下性质：
+# 1. 左指针左边均为非零数。 2. 右指针左边直到左指针处均为0
+class Solution:
+    def moveZeroes(self, nums: List[int]) -> None:
+        n = len(nums)
+        
+        slow = 0
+        fast = 0
+        while (fast < n):
+            if (nums[fast] != 0):
+                nums[slow], nums[fast] = nums[fast], nums[slow] # 交换后，每一步都会停下来
+                slow += 1
+            fast += 1
+        return
+```
+## 844 比较含退格的字符串
+```python
+class Solution:
+    def backspaceCompare(self, s: str, t: str) -> bool:
+        list_s, list_t = list(s), list(t)
+        idx_a = 0
+        
+        for i in range(len(list_s)):
+            if list_s[i] != '#':
+                list_s[idx_a] = list_s[i]
+                idx_a += 1
+            else:
+                idx_a -= 1 if idx_a > 0 else 0
+                
+        idx_b = 0
+        for i in range(len(list_t)):
+            if list_t[i] != '#':
+                list_t[idx_b] = list_t[i]
+                idx_b += 1
+            else:
+                idx_b -= 1 if idx_b > 0 else 0
+        return list_s[:idx_a] == list_t[:idx_b]
+
+```
 
 
+# 977 有序数组的平方
+因为数组有序，所以数组平方最大的就在数组的两端，不是左边就是右边，不可能是中间。所有采用左右指针
+```python
+class Solution:
+    def sortedSquares(self, nums: List[int]) -> List[int]:
+        n = len(nums)
+        
+        left = 0
+        right = n-1
+        
+        res = [0] * n # 要从后往前修改元素
+        i = n - 1
+        while(left <= right):
+            if (nums[left] ** 2 >= nums[right] ** 2):
+                res[i] = nums[left] ** 2
+                left += 1
+            else:
+                res[i] = nums[right] ** 2
+                right -= 1
+            i -= 1
+        return res
+```
+
+# 209 长度最小的子数组
