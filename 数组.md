@@ -306,3 +306,88 @@ class Solution:
 ```
 
 # 209 长度最小的子数组
+采用**滑动窗口**，即不断调整 子序列的起始位置和终止位置，从而得出想要的结果。
+在暴力解法中，是一个for循环滑动窗口的起始位置，一个for循环为滑动窗口的终止位置，用两个for循环完成一个不断搜索区间的过程。
+那么滑动窗口用一个for循环是如何完成这个操作呢：如果一个for循环，那么应该表示的是滑动窗口的起始还是终止位置，如果是起始位置，那么如何找终止位置，又会陷入for循环。所以**滑动窗口用一个for循环，其索引必然是窗口的终止位置**。
+
+```python
+class Solution:
+    def minSubArrayLen(self, target: int, nums: List[int]) -> int:
+        res = float("inf") # 定义一个无限大的数
+
+        start = 0 # 滑动窗口的起始位置
+        num_sum = 0 # 总和
+        for end in range(len(nums)):
+            num_sum += nums[end]
+
+            while(num_sum >= target): # 这里循环的目的是找起始位置。如果窗口内的总值大于或者等于目标值，即满足条件，就要先更新res，因为题目的要求是大于等于。
+                res = min(res, end - start + 1)
+                num_sum -= nums[start]
+                start += 1
+        
+        return 0 if res == float("inf") else res
+# 时间复杂度O(n):不是for里面放个while就是O(n^2)，要看每个元素被操作的次数，这里每个元素被放进来一次，出去一次，时间复杂度是2n所以是O(n)
+# 空间复杂度O(1)
+```
+
+## 904 水果成篮
+
+上一题209是最小滑窗，这一题是最大滑窗。
+
+**滑动窗口**：
+- 滑动窗口是**右指针先出发**，左指针视情况追赶右指针。可类比男生暗恋女生，两人都往前走，但男生总是默默跟着女生但也不敢超过她。因此**右指针最多遍历一遍数组，左指针也最多遍历一遍数组，时间复杂度不超过O(2n)**。接下来的问题就是如何判断滑动窗口内是否满足题设条件：
+    - (1) 要么遍历这个滑窗，通过遍历来判断滑窗是否满足，需要O(n), 总时间O(n^2)
+    - (2) 要么选择字典，用空间换时间，那么判断滑窗需要O(1), 总时间O(n)
+
+[参考题解](https://leetcode.cn/problems/fruit-into-baskets/solution/shen-du-jie-xi-zhe-dao-ti-he-by-linzeyin-6crr/)
+
+
+**最小滑动窗口模板**
+```python
+for end in range(len(nums)):
+    判断[start, end] 是否满足条件
+    while 满足条件:
+        不断更新结果（要在while内更新！）
+        start += 1(最大程度压缩start, 使滑窗尽可能小)
+```
+
+**最大滑动窗口模板**
+```python 
+for end in range(len(nums)):
+    判断[start, end]是否满足条件
+    while 满足条件:
+        start += 1（最保守的压缩start, 一旦满足条件就退出压缩的过程，使滑窗尽可能大）
+    不断更新结果（要在while外更新）
+```
+所以关键区别在于，**最大滑窗是在迭代右移右边界的过程中更新结果，而最小滑窗则是在迭代右移左边界的过程中更新结果**，所以虽然都是滑窗，但是二者的模板和对应的贪心思路并不一样。
+
+
+```python
+
+class Solution:
+    def totalFruit(self, fruits: List[int]) -> int:
+        # 采用哈希表和一个中间变量来定义 当前条件
+        buckets = defaultdict(int)
+        class_cnt = 0
+
+        res = 0
+        start = 0
+
+        for end in range(len(fruits)):
+            #  判断当前是否满足条件
+            if buckets[fruits[end]] == 0:
+                class_cnt += 1
+            buckets[fruits[end]] += 1
+
+            # 开始更新左指针
+            while class_cnt > 2:
+                if buckets[fruits[start]] == 1:
+                    class_cnt -= 1
+                buckets[fruits[start]] -= 1
+                start += 1
+
+            # 满足条件了，要更新结果了
+            res = max(res, end - start + 1)
+        return res 
+
+```
