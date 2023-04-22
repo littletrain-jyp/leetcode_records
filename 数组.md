@@ -391,3 +391,39 @@ class Solution:
         return res 
 
 ```
+## 76 最小覆盖子串
+最小滑动窗口的题！
+
+```python 
+class Solution:
+    def minWindow(self, s: str, t: str) -> str:
+        
+        # 滑动窗口
+        n_s = len(s)
+        n_t = len(t)
+
+        d_res = defaultdict(int)
+        d_t = defaultdict(int)
+        l_t = list(set(list(t)))
+
+        for i in t:
+            d_t[i] += 1
+
+        res = s+t # 初始化一个res，保证其长度超过原来s的长度，因为后面要取长度最短的。
+
+        start = 0
+        for end in range(n_s):
+            # 判断条件，将右指针的元素加进来
+            d_res[s[end]] += 1
+            
+            # 判断d_t 中所有的元素的个数是不是都小于等于d_res
+            while(False not in [d_res[i]>= d_t[i] for i in l_t]): 
+                # 取最小的窗口结果
+                if len(res) >= (end - start + 1):
+                    res = s[start: end+1]
+                # 滑动左指针
+                d_res[s[start]] -= 1
+                start += 1
+
+        return res if len(res) <= n_s else ''
+```
